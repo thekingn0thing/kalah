@@ -1,0 +1,3 @@
+rootProject.name = 'kalah'
+include("kalah-core")
+
