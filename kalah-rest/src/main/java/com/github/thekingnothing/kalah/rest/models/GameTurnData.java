@@ -14,19 +14,36 @@
  *    limitations under the License.
  */
 
-package com.github.thekingnothing.kalah.core;
+package com.github.thekingnothing.kalah.rest.models;
 
-import com.github.thekingnothing.kalah.core.model.GameData;
-import com.github.thekingnothing.kalah.core.model.GameStatus;
 
-public interface KalahGame {
-    void start(Player playerOne, Player playerTwo);
+public class GameTurnData {
     
-    GameStatus getStatus();
+    private String gameId;
+    private String playerId;
+    private int houseIndex;
     
-    void makeTurn(PlayerHouse startHouse);
+    public String getGameId() {
+        return gameId;
+    }
     
-    KalahGameDesk getGameDesk();
+    public void setGameId(final String gameId) {
+        this.gameId = gameId;
+    }
     
-    GameData toGameData();
+    public String getPlayerId() {
+        return playerId;
+    }
+    
+    public void setPlayerId(final String playerId) {
+        this.playerId = playerId;
+    }
+    
+    public int getHouseIndex() {
+        return houseIndex;
+    }
+    
+    public void setHouseIndex(final int houseIndex) {
+        this.houseIndex = houseIndex;
+    }
 }

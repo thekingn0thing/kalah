@@ -20,11 +20,13 @@ import com.github.thekingnothing.kalah.core.Player;
 import com.github.thekingnothing.kalah.core.PlayerHouse;
 import com.github.thekingnothing.kalah.core.PlayerHouseBuilder;
 
-class PlayerHouseBuilderImpl implements PlayerHouseBuilder {
+import java.util.Objects;
+
+public class PlayerHouseBuilderImpl implements PlayerHouseBuilder {
     
     static BuilderFactory builderFactory = PlayerHouseBuilderImpl::new;
     
-    static PlayerHouseBuilder forPlayer(Player player) {
+    public static PlayerHouseBuilder forPlayer(Player player) {
         return builderFactory.create(player);
     }
     
@@ -51,7 +53,7 @@ class PlayerHouseBuilderImpl implements PlayerHouseBuilder {
         private final int stones;
         private final Player player;
         private final int houseIndex;
-    
+        
         private PlayerHouseImpl(final Player player, final int houseIndex, final int stones) {
             this.player = player;
             this.houseIndex = houseIndex;
@@ -62,28 +64,52 @@ class PlayerHouseBuilderImpl implements PlayerHouseBuilder {
         public int getStones() {
             return stones;
         }
-    
+        
         @Override
         public Player getPlayer() {
             return player;
         }
-    
+        
         @Override
         public int getHouseIndex() {
             return houseIndex;
         }
-    
+        
         @Override
         public PlayerHouse pickUpAllStones() {
             return new PlayerHouseImpl(player, houseIndex, 0);
         }
-    
+        
         @Override
         public PlayerHouse putStone() {
             return new PlayerHouseImpl(player, houseIndex, stones + 1);
         }
+        
+        @Override
+        public String toString() {
+            
+            return "PlayerHouseImpl{" + "stones=" + stones +
+                                  ", player=" + player.getId() +
+                                  ", houseIndex=" + houseIndex +
+                                  '}';
+        }
+    
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) { return true; }
+            if (!(o instanceof PlayerHouseImpl)) { return false; }
+            final PlayerHouseImpl that = (PlayerHouseImpl) o;
+            return getStones() == that.getStones() &&
+                       getHouseIndex() == that.getHouseIndex() &&
+                       Objects.equals(getPlayer(), that.getPlayer());
+        }
+    
+        @Override
+        public int hashCode() {
+            return Objects.hash(getStones(), getPlayer(), getHouseIndex());
+        }
     }
-
+    
     interface BuilderFactory {
         PlayerHouseBuilder create(Player player);
     }

@@ -16,10 +16,12 @@
 
 package com.github.thekingnothing.kalah.core.support;
 
-import com.github.thekingnothing.kalah.core.GameAlreadyStartedException;
-import com.github.thekingnothing.kalah.core.GameStatus;
-import com.github.thekingnothing.kalah.core.IllegalPlayerException;
-import com.github.thekingnothing.kalah.core.IllegalTurnException;
+import com.github.thekingnothing.kalah.core.DeskLocation;
+import com.github.thekingnothing.kalah.core.exception.GameAlreadyStartedException;
+import com.github.thekingnothing.kalah.core.model.GameData;
+import com.github.thekingnothing.kalah.core.model.GameStatus;
+import com.github.thekingnothing.kalah.core.exception.IllegalPlayerException;
+import com.github.thekingnothing.kalah.core.exception.IllegalTurnException;
 import com.github.thekingnothing.kalah.core.KalahGame;
 import com.github.thekingnothing.kalah.core.KalahGameDesk;
 import com.github.thekingnothing.kalah.core.PlayerHouse;
@@ -27,24 +29,43 @@ import com.github.thekingnothing.kalah.core.PlayerStore;
 import com.github.thekingnothing.kalah.core.Player;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class DefaultKalahGame implements KalahGame {
+import static java.util.stream.Collectors.toList;
+
+class DefaultKalahGame implements KalahGame {
     
     static final int HOUSES_PER_PLAYER = 6;
-    private static final int MAX_HOUSES_INDEX = HOUSES_PER_PLAYER - 1;
+    static final int MAX_HOUSES_INDEX = HOUSES_PER_PLAYER - 1;
     
-    private final int stonesCount;
+    private final int initStonesCount;
+    private final int halfOfStones;
     
     private Players players;
     private GameStatus status;
     private KalahGameDesk gameDesk;
     private Player nextPlayer;
     private Player winner;
-    private int halfOfStones;
     private boolean captureResult;
     
-    public DefaultKalahGame(final int stonesCount) {
-        this.stonesCount = stonesCount;
+    DefaultKalahGame(final int initStonesCount) {
+        this.initStonesCount = initStonesCount;
+        this.halfOfStones = calculateHalfOfStones(initStonesCount);
+    }
+    
+    DefaultKalahGame(final int initStonesCount, final GameStatus status, final Players players, final KalahGameDesk gameDesk,
+                     final Player nextPlayer, final Player winnerPlayer) {
+        this.initStonesCount = initStonesCount;
+        this.halfOfStones = calculateHalfOfStones(initStonesCount);
+        this.status = status;
+        this.players = players;
+        this.gameDesk = gameDesk;
+        this.nextPlayer = nextPlayer;
+        this.winner = winnerPlayer;
+    }
+    
+    private int calculateHalfOfStones(final int initStonesCount) {
+        return HOUSES_PER_PLAYER * initStonesCount;
     }
     
     @Override
@@ -52,11 +73,14 @@ public class DefaultKalahGame implements KalahGame {
         if (status == GameStatus.Started) {
             throw new GameAlreadyStartedException("Game is already started.");
         }
-        halfOfStones = HOUSES_PER_PLAYER * stonesCount;
+        if (playerOne.equals(playerTwo)){
+            throw new IllegalArgumentException("Players should be different.");
+        }
+        
         
         players = new Players(playerOne, playerTwo);
         nextPlayer = playerOne;
-        gameDesk = new ArrayKalahGameDesk(players, stonesCount);
+        gameDesk = new ArrayKalahGameDesk(players, initStonesCount);
         status = GameStatus.Started;
     }
     
@@ -66,13 +90,39 @@ public class DefaultKalahGame implements KalahGame {
     }
     
     @Override
-    public GameStatus getStatus() {
-        return status;
+    public GameData toGameData() {
+        final GameDataImpl gameData = new GameDataImpl();
+    
+        final Player playerOne = players.getPlayerOne();
+        final Player playerTwo = players.getPlayerTwo();
+    
+        gameData.setStatus(status);
+        gameData.setPlayerOneId(playerOne.getId());
+        gameData.setPlayerTwoId(playerTwo.getId());
+        gameData.setNextPlayerId(nextPlayer.getId());
+        gameData.setPlayerOneStore(gameDesk.getPlayerStore(playerOne).getStones());
+        gameData.setPlayerTwoStore(gameDesk.getPlayerStore(playerTwo).getStones());
+        
+        gameData.setPlayerOneHouses(
+            gameDesk.getPlayerHouses(playerOne).stream()
+                    .mapToInt(DeskLocation::getStones)
+                    .boxed()
+                    .collect(Collectors.toList())
+        );
+        
+        gameData.setPlayerTwoHouses(
+            gameDesk.getPlayerHouses(playerTwo).stream()
+                    .mapToInt(DeskLocation::getStones)
+                    .boxed()
+                    .collect(Collectors.toList())
+        );
+        
+        return gameData;
     }
     
     @Override
-    public Player getWinner() {
-        return winner;
+    public GameStatus getStatus() {
+        return status;
     }
     
     @Override
@@ -87,6 +137,22 @@ public class DefaultKalahGame implements KalahGame {
         tryToCaptureStones(turnPlayer, opponent);
         determinateNextPlayer(turnPlayer, opponent);
         finishTheGameIfRequired(turnPlayer, opponent);
+    }
+    
+    Player getWinner() {
+        return winner;
+    }
+    
+    Player getPlayerOne() {
+        return players.getPlayerOne();
+    }
+    
+    Player getPlayerTwo() {
+        return players.getPlayerTwo();
+    }
+    
+    Player getNextPlayer() {
+        return nextPlayer;
     }
     
     private void finishTheGameIfRequired(final Player turnPlayer, final Player opponent) {
@@ -194,9 +260,9 @@ public class DefaultKalahGame implements KalahGame {
     private class TurnValidator {
         private final PlayerHouse startHouse;
         
-        public TurnValidator(final PlayerHouse startHouse) {this.startHouse = startHouse;}
+        private TurnValidator(final PlayerHouse startHouse) {this.startHouse = startHouse;}
         
-        public void validate() {
+        private void validate() {
             assertHouseIndexInARange(startHouse);
             assertPlayerInAGame(startHouse.getPlayer());
             assertThatPlayerMakeTurnInOrder(startHouse.getPlayer());

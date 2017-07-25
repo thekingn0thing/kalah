@@ -17,8 +17,13 @@
 package com.github.thekingnothing.kalah.rest;
 
 
-import com.github.thekingnothing.kalah.rest.dto.GameData;
-import com.github.thekingnothing.kalah.rest.dto.GameStartData;
+import com.github.thekingnothing.kalah.core.model.GameData;
+import com.github.thekingnothing.kalah.rest.mappers.GameDataMapper;
+import com.github.thekingnothing.kalah.rest.models.GameTurnData;
+import com.github.thekingnothing.kalah.rest.models.JsonGameData;
+import com.github.thekingnothing.kalah.rest.models.GameStartData;
+import com.github.thekingnothing.kalah.service.GameService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,15 +33,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class KalahRestController {
     
+    @Autowired
+    private GameService gameService;
+    
+    @Autowired
+    private GameDataMapper gameDataMapper;
+    
     @RequestMapping(
         value = "/game/start",
         method = RequestMethod.POST,
         headers = "Accept=application/json",
         produces = "application/json"
     )
-    public @ResponseBody GameData startGame(@RequestBody final GameStartData data) {
-        final GameData gameData = new GameData();
-        gameData.setStatus("Started");
-        return gameData;
+    public @ResponseBody JsonGameData startGame(@RequestBody final GameStartData data) {
+        final GameData gameData = gameService.startGame(data.getPlayerOne(), data.getPlayerTwo());
+        return gameDataMapper.map(gameData);
+    }
+    
+    @RequestMapping(
+        value = "/game/turn",
+        method = RequestMethod.POST,
+        headers = "Accept=application/json",
+        produces = "application/json"
+    )
+    public @ResponseBody JsonGameData startGame(@RequestBody final GameTurnData data) {
+        final GameData gameData = gameService.makeTurn(data.getGameId(), data.getPlayerId(), data.getHouseIndex());
+        return gameDataMapper.map(gameData);
     }
 }

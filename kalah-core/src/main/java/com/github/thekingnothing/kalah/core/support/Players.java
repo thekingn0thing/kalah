@@ -26,9 +26,14 @@ import java.util.Objects;
 
 class Players implements Iterable<PlayerWrapper> {
     private final Map<Player, PlayerWrapper> players;
+    private final Player[] playerOrder;
     
     Players(final Player playerOne, final Player playerTwo) {
         players = new LinkedHashMap<>();
+        playerOrder = new Player[2];
+        
+        playerOrder[0] = playerOne;
+        playerOrder[1] = playerTwo;
         
         final PlayerWrapper playerOneWrapper = new PlayerWrapper(0, playerOne);
         players.put(playerOne, playerOneWrapper);
@@ -66,6 +71,14 @@ class Players implements Iterable<PlayerWrapper> {
         return players.get(player);
     }
     
+    Player getPlayerOne() {
+        return playerOrder[0];
+    }
+    
+    Player getPlayerTwo() {
+        return playerOrder[1];
+    }
+    
     static class PlayerWrapper implements Player {
         private final int index;
         private final Player player;
@@ -81,7 +94,7 @@ class Players implements Iterable<PlayerWrapper> {
         
         @Override
         public String getId() {return player.getId();}
-    
+        
         @Override
         public boolean equals(final Object o) {
             if (this == o) { return true; }
@@ -89,7 +102,7 @@ class Players implements Iterable<PlayerWrapper> {
             final Player player = (Player) o;
             return Objects.equals(getId(), player.getId());
         }
-    
+        
         @Override
         public int hashCode() {
             return Objects.hash(getId());

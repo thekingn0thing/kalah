@@ -17,10 +17,10 @@
 package com.github.thekingnothing.kalah.core.support;
 
 import com.github.thekingnothing.kalah.core.DeskLocation;
-import com.github.thekingnothing.kalah.core.GameAlreadyStartedException;
-import com.github.thekingnothing.kalah.core.GameStatus;
-import com.github.thekingnothing.kalah.core.IllegalPlayerException;
-import com.github.thekingnothing.kalah.core.IllegalTurnException;
+import com.github.thekingnothing.kalah.core.exception.GameAlreadyStartedException;
+import com.github.thekingnothing.kalah.core.model.GameStatus;
+import com.github.thekingnothing.kalah.core.exception.IllegalPlayerException;
+import com.github.thekingnothing.kalah.core.exception.IllegalTurnException;
 import com.github.thekingnothing.kalah.core.KalahGameDesk;
 import com.github.thekingnothing.kalah.core.PlayerHouse;
 import com.github.thekingnothing.kalah.core.PlayerHouseBuilder;
@@ -76,6 +76,13 @@ public class KalahGameTest {
             assertThat(gameDesk)
                 .as("Game desk is null.")
                 .isNull();
+        }
+    
+        @Test
+        public void should_throw_exception_if_try_to_start_a_game_with_same_player() {
+            assertThatThrownBy(() -> objectUnderTest.start(playerOne, playerOne))
+                .as("Exception is thrown")
+                .isInstanceOf(IllegalArgumentException.class);
         }
     }
     

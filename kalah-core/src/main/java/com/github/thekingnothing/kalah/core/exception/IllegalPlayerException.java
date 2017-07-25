@@ -14,8 +14,11 @@
  *    limitations under the License.
  */
 
-package com.github.thekingnothing.kalah.core;
+package com.github.thekingnothing.kalah.core.exception;
 
-public enum GameStatus {
-    Started, Finished
+
+public class IllegalPlayerException extends RuntimeException {
+    public IllegalPlayerException(final String message) {
+        super(message);
+    }
 }

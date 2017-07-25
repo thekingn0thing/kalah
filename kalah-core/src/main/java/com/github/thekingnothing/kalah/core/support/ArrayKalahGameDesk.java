@@ -189,14 +189,14 @@ class ArrayKalahGameDesk implements KalahGameDesk {
         return playerStores[player.getIndex()];
     }
     
-    private static class PlayerStoreImpl implements PlayerStore {
+    static class PlayerStoreImpl implements PlayerStore {
         private int stones;
         
         private PlayerStoreImpl() {
             this.stones = 0;
         }
         
-        private PlayerStoreImpl(final int stones) {
+        PlayerStoreImpl(final int stones) {
             this.stones = stones;
         }
         

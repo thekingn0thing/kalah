@@ -14,17 +14,12 @@
  *    limitations under the License.
  */
 
-package com.github.thekingnothing.kalah.rest.dto;
+package com.github.thekingnothing.kalah.core;
 
-public class GameData {
+import com.github.thekingnothing.kalah.core.model.GameData;
+
+public interface GameLoader {
+    KalahGame load(final GameData gameData);
     
-    public String status;
-    
-    public String getStatus() {
-        return status;
-    }
-    
-    public void setStatus(final String status) {
-        this.status = status;
-    }
+    KalahGame initGame(Player playerOne, Player playerTwo);
 }

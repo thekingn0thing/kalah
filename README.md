@@ -1,3 +1,4 @@
+# Overview 
 This project is implementing back-end for [Kalah Board](https://en.wikipedia.org/wiki/Kalah) game.
 
 The game provides a Kalah board and a number of seeds or counters. The board has 12 small pits, called houses, on each side; and a big pit, called an end zone, at each end. The object of the game is to capture more seeds than one's opponent.
@@ -10,3 +11,23 @@ The game provides a Kalah board and a number of seeds or counters. The board has
 1. When one player no longer has any seeds in any of their houses, the game ends. The other player moves all remaining seeds to their store, and the player with the most seeds in their store wins.
 
 It is possible for the game to end in a draw.
+
+# How to start 
+
+To start application at first you have to build it with using Gradle. Run command: 
+
+```
+./gradlew clean build 
+```
+
+then to start application run 
+
+```
+./gradlew bootRun 
+```
+
+
+then goto 
+http://localhost:8080/api/swagger-ui.html#!/kalah-rest-controller/
+
+You may use the [Swagger UI](https://swagger.io) to check API.

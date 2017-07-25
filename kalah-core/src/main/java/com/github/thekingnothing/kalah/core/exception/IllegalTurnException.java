@@ -14,19 +14,10 @@
  *    limitations under the License.
  */
 
-package com.github.thekingnothing.kalah.core;
+package com.github.thekingnothing.kalah.core.exception;
 
-import com.github.thekingnothing.kalah.core.model.GameData;
-import com.github.thekingnothing.kalah.core.model.GameStatus;
-
-public interface KalahGame {
-    void start(Player playerOne, Player playerTwo);
-    
-    GameStatus getStatus();
-    
-    void makeTurn(PlayerHouse startHouse);
-    
-    KalahGameDesk getGameDesk();
-    
-    GameData toGameData();
+public class IllegalTurnException extends RuntimeException {
+    public IllegalTurnException(final String message) {
+        super(message);
+    }
 }

@@ -14,27 +14,11 @@
  *    limitations under the License.
  */
 
-package com.github.thekingnothing.kalah.rest.dto;
+package com.github.thekingnothing.kalah.core.exception;
 
 
-public class GameStartData {
-    
-    private String playerOne;
-    private String playerTwo;
-    
-    public String getPlayerOne() {
-        return playerOne;
-    }
-    
-    public void setPlayerOne(final String playerOne) {
-        this.playerOne = playerOne;
-    }
-    
-    public String getPlayerTwo() {
-        return playerTwo;
-    }
-    
-    public void setPlayerTwo(final String playerTwo) {
-        this.playerTwo = playerTwo;
+public class GameAlreadyStartedException extends RuntimeException {
+    public GameAlreadyStartedException(final String message) {
+        super(message);
     }
 }

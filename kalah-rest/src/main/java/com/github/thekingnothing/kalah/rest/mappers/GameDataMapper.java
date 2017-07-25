@@ -14,19 +14,15 @@
  *    limitations under the License.
  */
 
-package com.github.thekingnothing.kalah.core;
+package com.github.thekingnothing.kalah.rest.mappers;
 
 import com.github.thekingnothing.kalah.core.model.GameData;
-import com.github.thekingnothing.kalah.core.model.GameStatus;
+import com.github.thekingnothing.kalah.rest.models.JsonGameData;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public interface KalahGame {
-    void start(Player playerOne, Player playerTwo);
+@Mapper(componentModel = "spring")
+public interface GameDataMapper {
     
-    GameStatus getStatus();
-    
-    void makeTurn(PlayerHouse startHouse);
-    
-    KalahGameDesk getGameDesk();
-    
-    GameData toGameData();
+    JsonGameData map(GameData gameData);
 }

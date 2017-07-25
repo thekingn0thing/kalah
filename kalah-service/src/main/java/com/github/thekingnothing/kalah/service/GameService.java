@@ -14,10 +14,13 @@
  *    limitations under the License.
  */
 
-package com.github.thekingnothing.kalah.core;
+package com.github.thekingnothing.kalah.service;
 
-public class IllegalTurnException extends RuntimeException {
-    public IllegalTurnException(final String message) {
-        super(message);
-    }
+import com.github.thekingnothing.kalah.core.model.GameData;
+
+public interface GameService {
+    
+    GameData startGame(String playerOneId, String playerTwoId);
+    
+    GameData makeTurn(String gameId, String playerId, int houseIndex);
 }

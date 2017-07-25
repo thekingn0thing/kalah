@@ -14,11 +14,15 @@
  *    limitations under the License.
  */
 
-package com.github.thekingnothing.kalah.core;
+package com.github.thekingnothing.kalah.repository;
 
+import com.github.thekingnothing.kalah.core.Player;
+import com.github.thekingnothing.kalah.core.model.GameData;
 
-public class GameAlreadyStartedException extends RuntimeException {
-    public GameAlreadyStartedException(final String message) {
-        super(message);
-    }
+public interface GameRepository {
+    Player getPlayer(String playerOneId);
+    
+    void save(GameData gameData);
+    
+    GameData load(String gameId);
 }

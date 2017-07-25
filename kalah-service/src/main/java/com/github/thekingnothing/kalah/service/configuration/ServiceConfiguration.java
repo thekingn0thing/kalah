@@ -14,19 +14,20 @@
  *    limitations under the License.
  */
 
-package com.github.thekingnothing.kalah.core;
+package com.github.thekingnothing.kalah.service.configuration;
 
-import com.github.thekingnothing.kalah.core.model.GameData;
-import com.github.thekingnothing.kalah.core.model.GameStatus;
+import com.github.thekingnothing.kalah.core.GameLoader;
+import com.github.thekingnothing.kalah.core.support.DefaultGameLoader;
+import com.github.thekingnothing.kalah.service.GameService;
+import com.github.thekingnothing.kalah.service.impl.GameServiceImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public interface KalahGame {
-    void start(Player playerOne, Player playerTwo);
+@Configuration
+public class ServiceConfiguration {
     
-    GameStatus getStatus();
-    
-    void makeTurn(PlayerHouse startHouse);
-    
-    KalahGameDesk getGameDesk();
-    
-    GameData toGameData();
+    @Bean
+    public GameLoader gameLoader(){
+        return new DefaultGameLoader();
+    }
 }

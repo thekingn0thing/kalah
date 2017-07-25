@@ -3,4 +3,5 @@ include 'kalah-core'
 include 'kalah-service'
 include 'kalah-server'
 include 'kalah-rest'
+include 'kalah-repository'
 

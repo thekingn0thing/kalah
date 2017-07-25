@@ -23,6 +23,7 @@ ext {
     junitVersion = "4.12"
     junitHierarchicalcontextrunnerVersion = "4.12.1"
     assertjVersion = "3.5.2"
+    mapStructVersion = "1.1.0.Final"
 }
 
 group 'com.github.thekingnothing'
@@ -49,6 +50,8 @@ project(":kalah-core") {
         testCompile("junit:junit:${junitVersion}")
         testCompile("de.bechte.junit:junit-hierarchicalcontextrunner:${junitHierarchicalcontextrunnerVersion}")
         testCompile("org.assertj:assertj-core:${assertjVersion}")
+        testCompile("io.github.benas:random-beans:3.7.0")
+        testCompile("org.apache.commons:commons-lang3:3.6")
     }
 }
 
@@ -64,17 +67,83 @@ project(":kalah-service") {
     }
 }
 
-project(":kalah-rest") {
+project(":kalah-repository") {
     dependencies {
         compile(project(":kalah-service"))
-        compile("org.springframework:spring-web")
-        compile("org.springframework:spring-webmvc")
+        compile("org.springframework.boot:spring-boot-starter")
         testCompile("org.springframework.boot:spring-boot-starter-test")
     }
 
     dependencyManagement {
         imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
     }
+}
+
+project(":kalah-rest") {
+
+    ext {
+        javaLanguageLevel = '1.8'
+        generatedMapperSourcesDir = "${buildDir}/generated-src/mapstruct/main"
+    }
+
+    sourceCompatibility = project.javaLanguageLevel
+
+    configurations {
+        mapstruct
+    }
+
+    sourceSets.main {
+        ext.originalJavaSrcDirs = java.srcDirs
+        java.srcDir "${generatedMapperSourcesDir}"
+    }
+
+    dependencies {
+        compile(project(":kalah-service"))
+        compile(project(":kalah-repository"))
+        compile("org.springframework:spring-web")
+        compile("org.springframework:spring-webmvc")
+
+        compile( "org.mapstruct:mapstruct:${mapStructVersion}" )
+        mapstruct( "org.mapstruct:mapstruct-processor:${mapStructVersion}" )
+
+        testCompile("org.springframework.boot:spring-boot-starter-test")
+    }
+
+    dependencyManagement {
+        imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+    }
+
+    task generateMainMapperClasses(type: JavaCompile) {
+        ext.aptDumpDir = file( "${buildDir}/tmp/apt/mapstruct" )
+        destinationDir = aptDumpDir
+
+        classpath = compileJava.classpath + configurations.mapstruct
+        source = sourceSets.main.originalJavaSrcDirs
+        ext.sourceDestDir = file ( "$generatedMapperSourcesDir" )
+
+        options.define(
+                compilerArgs: [
+                        "-nowarn",
+                        "-proc:only",
+                        "-encoding", "UTF-8",
+                        "-processor", "org.mapstruct.ap.MappingProcessor",
+                        "-s", sourceDestDir.absolutePath,
+                        "-source", project.javaLanguageLevel,
+                        "-target", project.javaLanguageLevel,
+                ]
+        );
+
+        inputs.dir source
+        outputs.dir generatedMapperSourcesDir;
+        doFirst {
+            sourceDestDir.mkdirs()
+        }
+        doLast {
+            aptDumpDir.delete()
+        }
+    }
+
+    compileJava.dependsOn generateMainMapperClasses
 }
 
 task wrapper(type: Wrapper) {
